@@ -1,7 +1,11 @@
 import { Routes } from '@angular/router';
 
 const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'notifications' },
+  { path: '', pathMatch: 'full', redirectTo: 'account' },
+  {
+    path: 'account',
+    loadComponent: () => import('./features/account-settings.component'),
+  },
   {
     path: 'notifications',
     loadComponent: () => import('./features/notifications/notifications-settings.component'),
@@ -16,8 +20,7 @@ const routes: Routes = [
       import('./features/payments/settings-payment.component'),
   },
   { path: 'payment-methods', redirectTo: 'payment' },
-  { path: 'account', redirectTo: 'notifications' },
-  { path: 'team', redirectTo: 'notifications' },
+  { path: 'team', redirectTo: 'account' },
   { path: 'plan-and-billing', redirectTo: '/billing/plan' },
 ];
 

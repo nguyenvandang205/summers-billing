@@ -12,7 +12,10 @@
 </button>
 
 <mat-menu class="min-w-60" xPosition="before" yPosition="above" #userMenu="matMenu">
-  <button class="py-2 [&>span]:flex [&>span]:items-center" mat-menu-item>
+  <a
+    class="py-2 [&>span]:flex [&>span]:items-center"
+    mat-menu-item
+    routerLink="/settings/account">
     <img class="size-4 rounded-lg" src="/assets/images/logo/logo.svg" alt="User avatar" />
     <div class="ml-3 flex min-w-0 flex-auto flex-col select-none">
       <div class="truncate font-medium">Administrator</div>
@@ -20,7 +23,7 @@
         admin&#64;hmpmaster.com
       </div>
     </div>
-  </button>
+  </a>
   <mat-divider />
   <a mat-menu-item routerLink="/billing/plan">
     <mat-icon svgIcon="sparkles" />

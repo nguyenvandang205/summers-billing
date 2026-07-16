@@ -1,177 +1,184 @@
-<form
-      class="grid grid-cols-1 gap-6 md:grid-cols-4 md:gap-8"
-      (submit)="save($event)"
-    >
-      <!-- Profile section -->
-      <div class="col-span-full">
-        <div class="text-lg font-medium">Profile</div>
-        <div class="text-neutral-500">
-          Following information is publicly displayed, be careful!
-        </div>
+<page-shell title="Account" description="Manage your profile, address, and localization preferences.">
+  <form class="flex flex-col gap-10" (submit)="save($event)">
+    <!-- Profile -->
+    <section class="grid gap-6 lg:grid-cols-[minmax(0,16rem)_minmax(0,1fr)] lg:gap-10">
+      <div>
+        <div class="text-lg font-semibold tracking-tight">Profile</div>
+        <p class="mt-1 text-md text-neutral-500">
+          Set your personal info, including name, email, and avatar.
+        </p>
       </div>
 
-      <!-- Name -->
-      <mat-form-field class="col-span-full md:col-span-2">
-        <mat-label>Name</mat-label>
-        <input
-          matInput
-          [formField]="accountSettingsForm.name"
-        />
-        <mat-icon
-          svgIcon="user"
-          matPrefix
-        ></mat-icon>
-        <mat-error>
-          @for (error of accountSettingsForm.name().errors(); track error) {
+      <div class="flex flex-col gap-5">
+        <div class="flex flex-wrap items-center gap-4">
+          <img class="size-14 rounded-xl object-cover ring-1 ring-neutral-200 dark:ring-neutral-800" [src]="avatarUrl()"
+            alt="Avatar" />
+          <div class="flex flex-col gap-2">
+            <div class="flex flex-wrap items-center gap-2">
+              <input #avatarInput type="file" class="hidden" accept="image/jpeg,image/png,.jpg,.jpeg,.png"
+                (change)="onAvatarSelected($event)" />
+              <button type="button" matButton="outlined" (click)="openAvatarPicker()">
+                <mat-icon svgIcon="upload" />
+                Change photo
+              </button>
+              <button type="button" matButton class="text-neutral-500" [disabled]="!hasCustomAvatar()"
+                (click)="removeAvatar()">
+                Remove
+              </button>
+            </div>
+            <div class="text-sm text-neutral-500">
+              Ideal image size: 128x128px. JPG/PNG under 5MB.
+            </div>
+            @if (avatarError()) {
+            <div class="text-sm text-red-600 dark:text-red-400">{{ avatarError() }}</div>
+            }
+          </div>
+        </div>
+
+        <mat-form-field class="w-full">
+          <mat-label>Name *</mat-label>
+          <input matInput [formField]="form.name" />
+          <mat-error>
+            @for (error of form.name().errors(); track error) {
             {{ error.message }}
+            }
+          </mat-error>
+        </mat-form-field>
+
+        <div class="flex flex-col gap-1.5">
+          <div class="text-md font-medium">Email</div>
+          @if (editingEmail()) {
+          <mat-form-field class="w-full">
+            <!-- <mat-label>Email</mat-label> -->
+            <input matInput type="email" [formField]="form.email" />
+            <mat-error>
+              @for (error of form.email().errors(); track error) {
+              {{ error.message }}
+              }
+            </mat-error>
+          </mat-form-field>
+          } @else {
+          <div class="flex items-center gap-2 rounded-lg px-1 py-2 text-md text-neutral-800 dark:text-neutral-200">
+            <span class="min-w-0 flex-auto truncate">{{ model().email }}</span>
+            <button type="button" matIconButton class="tiny" title="Edit email" (click)="editingEmail.set(true)">
+              <mat-icon class="size-4!" svgIcon="pencil" />
+            </button>
+          </div>
           }
-        </mat-error>
-      </mat-form-field>
-
-      <!-- Username -->
-      <mat-form-field class="col-span-full md:col-span-2 md:col-start-1">
-        <mat-label>Username</mat-label>
-        <input
-          matInput
-          [formField]="accountSettingsForm.username"
-        />
-        <div
-          class="text-neutral-500"
-          matPrefix
-        >
-          fusetheme.com/
         </div>
-      </mat-form-field>
 
-      <!-- Title -->
-      <mat-form-field class="col-span-full md:col-span-2 md:col-start-1">
-        <mat-label>Title</mat-label>
-        <input
-          matInput
-          [formField]="accountSettingsForm.title"
-        />
-        <mat-icon
-          svgIcon="briefcase-business"
-          matPrefix
-        ></mat-icon>
-      </mat-form-field>
+        <mat-form-field class="w-full">
+          <mat-label>Website</mat-label>
+          <input matInput [formField]="form.website" />
+        </mat-form-field>
+      </div>
+    </section>
 
-      <!-- Company -->
-      <mat-form-field class="col-span-full md:col-span-2">
-        <mat-label>Company</mat-label>
-        <input
-          matInput
-          [formField]="accountSettingsForm.company"
-        />
-        <mat-icon
-          svgIcon="building-2"
-          matPrefix
-        ></mat-icon>
-      </mat-form-field>
+    <mat-divider />
 
-      <!-- About -->
-      <mat-form-field class="col-span-full md:col-span-3">
-        <mat-label>About</mat-label>
-        <textarea
-          matInput
-          cdkTextareaAutosize
-          [formField]="accountSettingsForm.about"
-          [cdkAutosizeMinRows]="4"
-          [cdkAutosizeMaxRows]="6"
-        ></textarea>
-        <mat-hint>
-          Brief description for your profile. Basic HTML and Emoji are allowed.
-        </mat-hint>
-      </mat-form-field>
-
-      <!-- Divider -->
-      <mat-divider class="col-span-full my-4" />
-
-      <!-- Personal information section -->
-      <div class="col-span-full">
-        <div class="text-lg font-medium">Personal Information</div>
-        <div class="text-neutral-500">
-          Communication details in case we want to connect with you. These will
-          be kept private.
-        </div>
+    <!-- Address -->
+    <section class="grid gap-6 lg:grid-cols-[minmax(0,16rem)_minmax(0,1fr)] lg:gap-10">
+      <div>
+        <div class="text-lg font-semibold tracking-tight">Address</div>
+        <p class="mt-1 text-md text-neutral-500">
+          Set your billing address and contact details.
+        </p>
       </div>
 
-      <!-- Email -->
-      <mat-form-field class="col-span-full md:col-span-2">
-        <mat-label>Email</mat-label>
-        <input
-          matInput
-          [formField]="accountSettingsForm.email"
-        />
-        <mat-icon
-          svgIcon="mail"
-          matPrefix
-        ></mat-icon>
-        <mat-error>
-          @for (error of accountSettingsForm.email().errors(); track error) {
-            {{ error.message }}
-          }
-        </mat-error>
-      </mat-form-field>
+      <div class="grid grid-cols-1 gap-5 sm:grid-cols-6">
+        <mat-form-field class="col-span-full">
+          <mat-label>Address line 1</mat-label>
+          <input matInput [formField]="form.address1" />
+        </mat-form-field>
 
-      <!-- Phone -->
-      <mat-form-field class="col-span-full md:col-span-2">
-        <mat-label>Phone</mat-label>
-        <input
-          matInput
-          [formField]="accountSettingsForm.phone"
-        />
-        <mat-icon
-          svgIcon="phone"
-          matPrefix
-        ></mat-icon>
-      </mat-form-field>
+        <mat-form-field class="col-span-full">
+          <mat-label>Address line 2</mat-label>
+          <input matInput [formField]="form.address2" />
+        </mat-form-field>
 
-      <!-- Country -->
-      <mat-form-field class="col-span-full md:col-span-2">
-        <mat-label>Country</mat-label>
-        <mat-select [formField]="accountSettingsForm.country">
-          <mat-option [value]="'usa'">United States</mat-option>
-          <mat-option [value]="'canada'">Canada</mat-option>
-          <mat-option [value]="'mexico'">Mexico</mat-option>
-          <mat-option [value]="'france'">France</mat-option>
-          <mat-option [value]="'germany'">Germany</mat-option>
-          <mat-option [value]="'italy'">Italy</mat-option>
-        </mat-select>
-        <mat-icon
-          svgIcon="map-pin"
-          matPrefix
-        ></mat-icon>
-      </mat-form-field>
+        <mat-form-field class="col-span-full sm:col-span-2">
+          <mat-label>Postal code</mat-label>
+          <input matInput [formField]="form.postalCode" />
+        </mat-form-field>
 
-      <!-- Language -->
-      <mat-form-field class="col-span-full md:col-span-2">
-        <mat-label>Language</mat-label>
-        <mat-select [formField]="accountSettingsForm.language">
-          <mat-option [value]="'english'">English</mat-option>
-          <mat-option [value]="'french'">French</mat-option>
-          <mat-option [value]="'spanish'">Spanish</mat-option>
-          <mat-option [value]="'german'">German</mat-option>
-          <mat-option [value]="'italian'">Italian</mat-option>
-        </mat-select>
-        <mat-icon
-          svgIcon="globe"
-          matPrefix
-        ></mat-icon>
-      </mat-form-field>
+        <mat-form-field class="col-span-full sm:col-span-2">
+          <mat-label>State / Province</mat-label>
+          <mat-select [formField]="form.state">
+            <mat-option value="california">California</mat-option>
+            <mat-option value="new-york">New York</mat-option>
+            <mat-option value="texas">Texas</mat-option>
+            <mat-option value="washington">Washington</mat-option>
+          </mat-select>
+        </mat-form-field>
 
-      <!-- Divider -->
-      <mat-divider class="col-span-full my-4" />
-
-      <!-- Actions -->
-      <div class="col-span-full flex items-center justify-end gap-x-3">
-        <button
-          type="button"
-          matButton="outlined"
-        >
-          Cancel
-        </button>
-        <button matButton="filled">Save</button>
+        <mat-form-field class="col-span-full sm:col-span-2">
+          <mat-label>Country</mat-label>
+          <mat-select [formField]="form.country">
+            <mat-option value="usa">United States</mat-option>
+            <mat-option value="canada">Canada</mat-option>
+            <mat-option value="vietnam">Vietnam</mat-option>
+            <mat-option value="singapore">Singapore</mat-option>
+          </mat-select>
+        </mat-form-field>
       </div>
-    </form>
-  
+    </section>
+
+    <mat-divider />
+
+    <!-- Localization -->
+    <section class="grid gap-6 lg:grid-cols-[minmax(0,16rem)_minmax(0,1fr)] lg:gap-10">
+      <div>
+        <div class="text-lg font-semibold tracking-tight">Localization</div>
+        <p class="mt-1 text-md text-neutral-500">
+          Set your preferred language, timezone, and date/time formats.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <mat-form-field class="col-span-full">
+          <mat-label>Language</mat-label>
+          <mat-select [formField]="form.language">
+            <mat-option value="en-us">English (US)</mat-option>
+            <mat-option value="en-gb">English (UK)</mat-option>
+            <mat-option value="vi">Tiếng Việt</mat-option>
+            <mat-option value="ja">日本語</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="col-span-full">
+          <mat-label>Timezone</mat-label>
+          <mat-select [formField]="form.timezone">
+            <mat-option value="utc">Universal Coordinated Time (UTC)</mat-option>
+            <mat-option value="asia-saigon">Asia/Ho Chi Minh (GMT+7)</mat-option>
+            <mat-option value="america-los-angeles">America/Los Angeles (GMT-8)</mat-option>
+            <mat-option value="europe-london">Europe/London (GMT+0)</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Date format</mat-label>
+          <mat-select [formField]="form.dateFormat">
+            <mat-option value="mdy">MM/DD/YYYY</mat-option>
+            <mat-option value="dmy">DD/MM/YYYY</mat-option>
+            <mat-option value="ymd">YYYY-MM-DD</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Time format</mat-label>
+          <mat-select [formField]="form.timeFormat">
+            <mat-option value="12h">12-hour</mat-option>
+            <mat-option value="24h">24-hour</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </section>
+
+    <mat-divider />
+
+    <div class="flex items-center justify-end gap-x-3">
+      <button type="button" matButton="outlined" (click)="reset()">Cancel</button>
+      <button matButton="filled">Save</button>
+    </div>
+  </form>
+</page-shell>
