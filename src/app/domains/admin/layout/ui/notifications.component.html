@@ -1,0 +1,112 @@
+<button type="button"
+  class="relative inline-flex size-9 items-center justify-center rounded-lg text-neutral-600 transition-colors hover:bg-neutral-700/10 dark:text-neutral-300 dark:hover:bg-neutral-300/10"
+  cdkOverlayOrigin aria-label="Notifications" (click)="toggle()" #trigger="cdkOverlayOrigin">
+  <mat-icon class="pointer-events-none size-5!" svgIcon="bell" />
+  @if (unreadCount() > 0) {
+  <span class="absolute top-1.5 right-1.5 size-2 rounded-full bg-primary-600 ring-2 ring-white dark:ring-zinc-950"
+    aria-hidden="true"></span>
+  }
+</button>
+
+<ng-template cdkConnectedOverlay [cdkConnectedOverlayOrigin]="trigger" [cdkConnectedOverlayOpen]="open()"
+  [cdkConnectedOverlayPositions]="overlayPositions" [cdkConnectedOverlayHasBackdrop]="true"
+  [cdkConnectedOverlayBackdropClass]="backdropClasses" (detach)="toggle(false)" (backdropClick)="toggle(false)">
+  <div
+    class="z-10 flex w-[22rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-xl bg-white shadow-(--mat-sys-level2) dark:bg-neutral-900">
+    <!-- Header -->
+    <div class="flex shrink-0 items-center gap-0.5 px-3 pt-3 pb-1.5">
+      <div class="px-1 text-lg font-semibold tracking-tight">Notifications</div>
+      <div class="flex-auto"></div>
+      <button matIconButton class="tiny" title="Mark all as read" [disabled]="unreadCount() === 0"
+        (click)="markAllAsRead()">
+        <mat-icon class="size-4!" svgIcon="check-check" />
+      </button>
+      <a matIconButton class="tiny" title="Notification settings" routerLink="/settings/notifications"
+        (click)="toggle(false)">
+        <mat-icon class="size-4!" svgIcon="settings" />
+      </a>
+      <button matIconButton class="tiny" title="Close" (click)="toggle(false)">
+        <mat-icon class="size-4!" svgIcon="x" />
+      </button>
+    </div>
+
+    <!-- Filters -->
+    <div class="flex shrink-0 items-center gap-1.5 px-4 pb-3">
+      @for (filter of filters; track filter.value) {
+      <button type="button" class="rounded-full px-3 py-1 text-sm font-medium transition-colors" [class]="
+          currentFilter() === filter.value
+            ? 'bg-primary-600 text-white'
+            : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
+        " (click)="setFilter(filter.value)">
+        {{ filter.label }}
+      </button>
+      }
+    </div>
+
+    <!-- List -->
+    <div class="max-h-[min(40rem,70dvh)] overflow-auto flex flex-col gap-2 p-2">
+      @if (filteredNotifications().length === 0) {
+      <div class="flex flex-col items-center gap-2 px-6 py-12 text-center">
+        <mat-icon class="size-8! text-neutral-400" svgIcon="bell-off" />
+        <div class="font-medium">No notifications</div>
+        <div class="text-md text-neutral-500">
+          @if (currentFilter() === 'unread') {
+          You're all caught up.
+          } @else if (currentFilter() === 'system') {
+          No system alerts right now.
+          } @else {
+          New activity will show up here.
+          }
+        </div>
+      </div>
+      } @else {
+      @for (notification of filteredNotifications(); track notification.id) {
+      <div
+        class="flex cursor-pointer gap-3 px-4 py-3.5 transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800/80 rounded-lg"
+        [class.bg-primary-50/60]="!notification.read" [class.dark:bg-primary-950/30]="!notification.read">
+        <div
+          class="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
+          <mat-icon class="size-4!" [svgIcon]="notification.icon" />
+        </div>
+
+        <div class="min-w-0 flex-auto">
+          <div class="flex items-start gap-1">
+            <div class="min-w-0 flex-auto">
+              <div class="flex items-center gap-2">
+                <div class="truncate font-semibold">{{ notification.title }}</div>
+                @if (!notification.read) {
+                <span class="size-1.5 shrink-0 rounded-full bg-primary-600"></span>
+                }
+              </div>
+              <div class="mt-0.5 line-clamp-2 text-md text-neutral-600 dark:text-neutral-400">
+                {{ notification.description }}
+              </div>
+              <div class="mt-1 text-sm text-neutral-500">
+                {{ timeAgo(notification.time) }}
+              </div>
+            </div>
+
+            <button matIconButton class="tiny shrink-0" [matMenuTriggerFor]="notificationActions"
+              (click)="$event.stopPropagation()">
+              <mat-icon class="size-4!" svgIcon="ellipsis-vertical" />
+            </button>
+            <mat-menu #notificationActions="matMenu">
+              @if (!notification.read) {
+              <button mat-menu-item (click)="markAsRead(notification.id)">
+                <mat-icon svgIcon="check" />
+                Mark as read
+              </button>
+              }
+              <button mat-menu-item (click)="deleteNotification(notification.id)">
+                <mat-icon svgIcon="trash" />
+                Delete
+              </button>
+            </mat-menu>
+          </div>
+        </div>
+      </div>
+      }
+      }
+    </div>
+  </div>
+</ng-template>

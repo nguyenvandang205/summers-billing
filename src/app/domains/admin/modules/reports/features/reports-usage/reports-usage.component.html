@@ -1,0 +1,30 @@
+<page-shell title="Usage" description="Compare current usage against the previous period.">
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+    @for (item of metrics; track item.title) {
+    <mat-card appearance="filled">
+      <div class="flex items-center gap-x-2 px-1">
+        <mat-icon class="size-4 text-neutral-500" [svgIcon]="item.icon" />
+        <div class="font-medium tracking-tight">{{ item.title }}</div>
+      </div>
+
+      <div
+        class="mt-4 rounded-lg bg-white px-4 py-4 shadow-sm ring-1 ring-neutral-200/60 dark:bg-neutral-950 dark:ring-neutral-800">
+        <div class="text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
+          {{ item.value | number }}
+        </div>
+
+        <div class="mt-2 flex items-center gap-x-1 text-md font-medium"
+          [class]="item.change.up ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-500'">
+          @if (item.change.up) {
+          <mat-icon class="size-4" svgIcon="arrow-up" />
+          } @else {
+          <mat-icon class="size-4" svgIcon="arrow-down" />
+          }
+          <span>{{ item.change.value }}</span>
+          <span class="text-neutral-500">{{ item.change.period }}</span>
+        </div>
+      </div>
+    </mat-card>
+    }
+  </div>
+</page-shell>

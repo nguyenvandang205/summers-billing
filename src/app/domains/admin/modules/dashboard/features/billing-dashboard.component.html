@@ -1,0 +1,217 @@
+<div class="@container mx-auto flex w-full min-w-0 max-w-7xl flex-auto flex-col gap-4 p-6 sm:gap-6 lg:p-10 lg:pt-8">
+  <div class="flex items-center justify-between gap-x-3">
+    <div class="flex flex-col gap-y-0.5">
+      <div class="text-xl font-semibold tracking-tighter sm:text-2xl">
+        Dashboard
+      </div>
+      <div class="text-neutral-500">
+        Overview of your subscription and billing.
+      </div>
+    </div>
+
+    <div class="flex-auto"></div>
+
+    <a matButton="filled" routerLink="/billing/plan">
+      <mat-icon svgIcon="settings-2" />
+      Manage plan
+    </a>
+  </div>
+
+  <mat-card appearance="filled" class="flex min-w-0 flex-col overflow-hidden">
+    <mat-card-header>
+      <div class="flex flex-auto items-center gap-x-2">
+        <mat-icon class="size-4" svgIcon="chart-line" />
+        <div class="font-medium tracking-tight">Billing Overview</div>
+        <div class="ml-auto">
+          <button class="tiny" matIconButton [matMenuTriggerFor]="billingChartMenu">
+            <mat-icon svgIcon="ellipsis-vertical" />
+          </button>
+          <mat-menu #billingChartMenu="matMenu">
+            <a mat-menu-item routerLink="/reports/spending">
+              View spending report
+            </a>
+            <a mat-menu-item routerLink="/billing/invoices">
+              View invoices
+            </a>
+          </mat-menu>
+        </div>
+      </div>
+    </mat-card-header>
+    <div class="grid min-w-0 grid-cols-4 gap-2">
+      <mat-card-content class="col-span-full flex min-w-0 flex-auto flex-col overflow-hidden p-0 @2xl:col-span-2 @4xl:col-span-3">
+        <div class="flex flex-col items-start gap-4 pt-4 pr-4 pl-6 sm:pt-6">
+          <div class="flex min-w-0 flex-col">
+            <div class="text-3xl font-semibold">Charges vs. Payments</div>
+            <div class="mt-0.5 text-md text-neutral-500">
+              Charges exceeded payments in May. Review add-ons and usage
+              before the next billing cycle.
+            </div>
+          </div>
+
+          <div class="ml-auto flex shrink-0 items-center gap-0.5 rounded-lg bg-neutral-100 p-0.5 dark:bg-neutral-900">
+            @for (year of billingChartYears; track year) {
+            <button type="button"
+              class="rounded-md px-2.5 py-1 text-sm font-medium text-neutral-500 transition-colors hover:text-neutral-800 dark:hover:text-neutral-100"
+              [class.bg-white]="activeBillingYear() === year" [class.text-neutral-900]="activeBillingYear() === year"
+              [class.shadow-sm]="activeBillingYear() === year"
+              [class.dark:bg-neutral-800]="activeBillingYear() === year"
+              [class.dark:text-neutral-50]="activeBillingYear() === year" (click)="setBillingYear(year)">
+              {{ year }}
+            </button>
+            }
+          </div>
+        </div>
+        <div class="min-w-0 overflow-x-auto overflow-y-hidden overscroll-x-contain [-webkit-overflow-scrolling:touch]">
+          <div class="w-[40rem] max-w-none sm:w-full">
+            <apx-chart #billingChartCmp class="block h-72 w-full" [chart]="billingChart.chart"
+              [colors]="billingChart.colors" [dataLabels]="billingChart.dataLabels" [fill]="billingChartFill()"
+              [grid]="billingChart.grid" [legend]="billingChart.legend" [markers]="billingChart.markers"
+              [series]="billingChartSeries()" [states]="billingChart.states" [stroke]="billingChart.stroke"
+              [tooltip]="billingChart.tooltip()" [xaxis]="billingChart.xaxis" [yaxis]="billingChart.yaxis" />
+          </div>
+        </div>
+      </mat-card-content>
+
+      <mat-card-content class="col-span-full flex flex-col @2xl:col-span-2 @4xl:col-span-1 text-md">
+        <div class="mt-1">
+          Distribution of invoices by their status.
+        </div>
+
+        <div class="mt-4 flex flex-col gap-y-3">
+          @for (
+          item of data.billingOverview.overview;
+          track item.label
+          ) {
+          <div class="flex items-center gap-x-1">
+            <div class="text-neutral-500">{{ item.label }}</div>
+            <div class="flex-auto"></div>
+            <div class="font-medium tabular-nums">{{ item.value }}</div>
+          </div>
+          }
+        </div>
+
+        <div class="flex-auto"></div>
+
+        <div class="mt-4 text-sm text-neutral-500">
+          Current plan: {{ data.currentPlan }} · Next billing
+          {{ data.nextBillingDate }}
+        </div>
+      </mat-card-content>
+    </div>
+  </mat-card>
+
+  <div class="grid gap-4 sm:gap-6 @max-md:grid-cols-1 @md:grid-cols-2 @4xl:grid-cols-4">
+    @for (item of data.summary; track item.title) {
+    <mat-card appearance="filled">
+      <mat-card-header>
+        <div class="flex items-center gap-x-2">
+          <mat-icon class="size-4" [svgIcon]="item.icon" />
+          <div class="font-medium tracking-tight">{{ item.title }}</div>
+        </div>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="text-5xl font-semibold">
+          @if (item.title === 'Amount Due' || item.title === 'Monthly Spend') {
+          {{ item.value | currency: 'USD' : 'symbol' : '1.0-0' }}
+          } @else {
+          {{ item.value | number }}
+          }
+        </div>
+        <div class="mt-2 flex items-center gap-x-1">
+          @if (item.change.up) {
+          <mat-icon class="size-4 text-green-600" svgIcon="arrow-up" />
+          } @else {
+          <mat-icon class="size-4 text-red-600" svgIcon="arrow-down" />
+          }
+          <div class="flex items-center gap-x-1 text-md font-medium text-neutral-500">
+            <div>
+              {{ item.change.value > 0 ? '+' : ''
+              }}{{ item.change.value | number }}{{ item.change.unit }}
+            </div>
+            <div>{{ item.change.period }}</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    }
+  </div>
+
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+    <mat-card appearance="filled" class="flex">
+      <mat-card-header>
+        <div class="flex flex-auto items-center gap-x-2">
+          <mat-icon class="size-4" svgIcon="logs" />
+          <div class="font-medium tracking-tight">Cost Distribution</div>
+          <div class="ml-auto">
+            <button class="tiny" matIconButton [matMenuTriggerFor]="costChartMenu">
+              <mat-icon svgIcon="ellipsis-vertical" />
+            </button>
+            <mat-menu #costChartMenu="matMenu">
+              <a mat-menu-item routerLink="/reports/spending">
+                View spending report
+              </a>
+            </mat-menu>
+          </div>
+        </div>
+      </mat-card-header>
+      <mat-card-content class="flex flex-auto flex-col justify-center">
+        <apx-chart class="h-80" [chart]="costChart.chart" [colors]="costChart.colors" [fill]="costChart.fill"
+          [labels]="costChart.labels" [legend]="costChart.legend" [plotOptions]="costChart.plotOptions"
+          [responsive]="costChart.responsive" [series]="costChart.series" [stroke]="costChart.stroke"
+          [tooltip]="costChart.tooltip()" [yaxis]="costChart.yaxis" />
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card appearance="filled">
+      <mat-card-header>
+        <div class="flex flex-auto items-center gap-x-2">
+          <mat-icon class="size-4" svgIcon="calendar-clock" />
+          <div class="font-medium tracking-tight">Upcoming Billing</div>
+          <div class="ml-auto">
+            <button class="tiny" matIconButton [matMenuTriggerFor]="upcomingMenu">
+              <mat-icon svgIcon="ellipsis-vertical" />
+            </button>
+            <mat-menu #upcomingMenu="matMenu">
+              <a mat-menu-item routerLink="/billing/invoices">
+                View invoices
+              </a>
+            </mat-menu>
+          </div>
+        </div>
+      </mat-card-header>
+      <mat-card-content class="flex flex-auto flex-col gap-y-6">
+        @for (item of data.upcoming; track item.title) {
+        <div class="flex items-center gap-x-4">
+          <div
+            class="flex flex-col items-center rounded-md bg-neutral-100 px-2 py-1 whitespace-nowrap ring-1 ring-transparent dark:bg-neutral-900 dark:ring-neutral-700">
+            <div class="text-sm text-neutral-500 tabular-nums">
+              {{ item.date | date: 'E, dd MMM' }}
+            </div>
+            <div class="font-medium tracking-tight tabular-nums">
+              {{ item.time }}
+            </div>
+          </div>
+
+          <div class="truncate">
+            <div class="truncate font-medium">{{ item.title }}</div>
+            @if (item.location) {
+            <div class="flex items-center">
+              <mat-icon class="size-3" svgIcon="map-pin" />
+              <div class="ml-1 truncate text-neutral-500">
+                {{ item.location }}
+              </div>
+            </div>
+            }
+          </div>
+
+          <div class="ml-auto">
+            <button matIconButton [routerLink]="upcomingLink(item.title)">
+              <mat-icon svgIcon="chevron-right" />
+            </button>
+          </div>
+        </div>
+        }
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

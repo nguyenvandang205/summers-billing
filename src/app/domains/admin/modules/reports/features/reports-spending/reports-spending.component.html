@@ -1,0 +1,74 @@
+<page-shell title="Spending" description="Monthly spending over the last 30 months.">
+  <mat-card appearance="filled" class="flex flex-col">
+    <mat-card-header>
+      <div class="flex flex-auto items-center gap-x-2">
+        <mat-icon class="size-4" svgIcon="wallet" />
+        <div class="font-medium tracking-tight">Monthly spending</div>
+        <div class="ml-auto">
+          <button class="tiny" matIconButton [matMenuTriggerFor]="spendingMenu">
+            <mat-icon svgIcon="ellipsis-vertical" />
+          </button>
+          <mat-menu #spendingMenu="matMenu">
+            <a mat-menu-item routerLink="/billing/invoices">View invoices</a>
+            <a mat-menu-item routerLink="/reports/usage">View usage report</a>
+          </mat-menu>
+        </div>
+      </div>
+    </mat-card-header>
+
+    <div
+      class="mt-4 max-h-[500px] overflow-auto rounded-lg bg-white shadow-sm ring-1 ring-neutral-200/60 lg:max-h-[calc(100dvh-16rem)] dark:bg-neutral-950 dark:ring-neutral-800">
+      <table class="w-full min-w-[560px] text-left text-md">
+        <thead class="sticky top-0 z-10 bg-white dark:bg-neutral-950">
+          <tr class="border-b border-neutral-200 text-neutral-500 dark:border-neutral-800">
+            <th class="px-5 py-3 font-medium sm:px-6">ID</th>
+            <th class="px-5 py-3 font-medium sm:px-6">
+              <span class="inline-flex items-center gap-x-1">
+                Date
+                <mat-icon class="size-3.5" svgIcon="arrow-down" />
+              </span>
+            </th>
+            <th class="px-5 py-3 font-medium sm:px-6">Status</th>
+            <th class="px-5 py-3 font-medium sm:px-6">Amount</th>
+            <th class="px-5 py-3 font-medium sm:px-6">Change</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of rows; track row.id) {
+          <tr class="border-b border-neutral-100 last:border-0 dark:border-neutral-800/80">
+            <td class="px-5 py-3 font-medium tabular-nums sm:px-6">
+              {{ row.id }}
+            </td>
+            <td class="px-5 py-3 text-neutral-600 dark:text-neutral-400 sm:px-6">
+              {{ row.date }}
+            </td>
+            <td class="px-5 py-3 sm:px-6">
+              <span class="rounded-md px-2 py-0.5 text-sm font-medium" [class]="statusClass(row.status)">
+                {{ row.status }}
+              </span>
+            </td>
+            <td class="px-5 py-3 font-medium tabular-nums sm:px-6">
+              {{ row.amount | currency: 'USD' }}
+            </td>
+            <td class="px-5 py-3 sm:px-6">
+              @if (row.change === null) {
+              <span class="text-neutral-400">—</span>
+              } @else {
+              <span class="inline-flex items-center gap-x-1 font-medium tabular-nums" [class]="
+                    row.change >= 0
+                      ? 'text-green-600 dark:text-green-500'
+                      : 'text-red-600 dark:text-red-500'
+                  ">
+                <mat-icon class="size-3.5" [svgIcon]="row.change >= 0 ? 'arrow-up' : 'arrow-down'" />
+                {{ row.change >= 0 ? '+' : ''
+                }}{{ row.change | currency: 'USD' : 'symbol' : '1.0-0' }}
+              </span>
+              }
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </mat-card>
+</page-shell>

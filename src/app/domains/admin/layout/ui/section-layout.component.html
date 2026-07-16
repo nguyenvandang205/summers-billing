@@ -1,0 +1,30 @@
+<div class="@container mx-auto flex w-full max-w-5xl flex-auto flex-col gap-5 p-5 sm:gap-6 sm:p-6 lg:p-8">
+  <div class="border-b border-neutral-100 pb-5 dark:border-neutral-800">
+    <div class="text-xl font-semibold tracking-tight sm:text-2xl">
+      {{ title() }}
+    </div>
+    @if (description()) {
+    <p class="mt-1 text-md text-neutral-500">{{ description() }}</p>
+    }
+  </div>
+
+  <nav class="mb-1 hidden sm:flex" mat-tab-nav-bar [mat-stretch-tabs]="false" [tabPanel]="tabPanel" ngSkipHydration>
+    @for (link of links(); track link.id) {
+    <a mat-tab-link routerLinkActive [routerLink]="link.route" [active]="rla.isActive" #rla="routerLinkActive">
+      {{ link.label }}
+    </a>
+    }
+  </nav>
+
+  <mat-form-field class="mb-1 w-full sm:hidden" subscriptSizing="dynamic">
+    <mat-select [value]="router.url" (selectionChange)="router.navigateByUrl($event.value)">
+      @for (link of links(); track link.id) {
+      <mat-option [value]="link.route">{{ link.label }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-tab-nav-panel #tabPanel>
+    <ng-content />
+  </mat-tab-nav-panel>
+</div>

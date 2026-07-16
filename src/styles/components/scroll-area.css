@@ -1,0 +1,56 @@
+/* Classic scrollbar — project-wide (avoids macOS overlay-only look). */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #a3a3a3 #e5e5e5;
+}
+
+.scheme-dark,
+.scheme-dark * {
+  scrollbar-color: #525252 #171717;
+}
+
+*::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+*::-webkit-scrollbar-track {
+  background-color: #f5f5f5;
+}
+
+.scheme-dark *::-webkit-scrollbar-track {
+  background-color: #171717;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #a3a3a3;
+  border-radius: 9999px;
+  border: 3px solid #f5f5f5;
+  background-clip: padding-box;
+}
+
+.scheme-dark *::-webkit-scrollbar-thumb {
+  background-color: #525252;
+  border-color: #171717;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #737373;
+}
+
+.scheme-dark *::-webkit-scrollbar-thumb:hover {
+  background-color: #737373;
+}
+
+*::-webkit-scrollbar-corner {
+  background-color: #f5f5f5;
+}
+
+.scheme-dark *::-webkit-scrollbar-corner {
+  background-color: #171717;
+}
+
+/* Optional: reserve gutter so layout doesn't jump when overflow appears. */
+.scroll-area {
+  scrollbar-gutter: stable;
+}

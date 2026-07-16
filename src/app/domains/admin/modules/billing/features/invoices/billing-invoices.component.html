@@ -1,0 +1,72 @@
+<page-shell title="Invoices" description="View and download your billing history.">
+  <mat-card appearance="filled">
+    <mat-card-header>
+      <div class="flex flex-auto items-center gap-x-2">
+        <mat-icon class="size-4" svgIcon="receipt" />
+        <div class="font-medium tracking-tight">Billing history</div>
+        <div class="ml-auto">
+          <button class="tiny" matIconButton [matMenuTriggerFor]="invoicesMenu">
+            <mat-icon svgIcon="ellipsis-vertical" />
+          </button>
+          <mat-menu #invoicesMenu="matMenu">
+            <a mat-menu-item routerLink="/reports/spending">View spending report</a>
+            <a mat-menu-item routerLink="/settings/payment">Payment methods</a>
+          </mat-menu>
+        </div>
+      </div>
+    </mat-card-header>
+
+    <div
+      class="mt-4 max-h-[500px] overflow-auto rounded-lg bg-white shadow-sm ring-1 ring-neutral-200/60 lg:max-h-[calc(100dvh-16rem)] dark:bg-neutral-950 dark:ring-neutral-800">
+      <table class="w-full min-w-[640px] text-left text-md">
+        <thead class="sticky top-0 z-10 bg-white dark:bg-neutral-950">
+          <tr class="border-b border-neutral-200 text-neutral-500 dark:border-neutral-800">
+            <th class="px-5 py-3 font-medium sm:px-6">Invoice</th>
+            <th class="px-5 py-3 font-medium sm:px-6">
+              <span class="inline-flex items-center gap-x-1">
+                Date
+                <mat-icon class="size-3.5" svgIcon="arrow-down" />
+              </span>
+            </th>
+            <th class="px-5 py-3 font-medium sm:px-6">Status</th>
+            <th class="px-5 py-3 font-medium sm:px-6">Amount</th>
+            <th class="px-5 py-3 text-right font-medium sm:px-6">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (invoice of data.invoices; track invoice.id) {
+          <tr
+            class="border-b border-neutral-100 last:border-0 dark:border-neutral-800/80">
+            <td class="px-5 py-3 font-medium tabular-nums sm:px-6">
+              {{ invoice.number }}
+            </td>
+            <td class="px-5 py-3 text-neutral-600 dark:text-neutral-400 sm:px-6">
+              {{ invoice.date }}
+            </td>
+            <td class="px-5 py-3 sm:px-6">
+              <span
+                class="rounded-md px-2 py-0.5 text-sm font-medium"
+                [class]="statusClass(invoice.status)">
+                {{ invoice.status }}
+              </span>
+            </td>
+            <td class="px-5 py-3 font-medium tabular-nums sm:px-6">
+              {{ invoice.amount | currency: 'USD' }}
+            </td>
+            <td class="px-5 py-3 text-right sm:px-6">
+              <a
+                class="inline-flex items-center gap-1 text-md font-medium hover:underline"
+                [href]="invoice.invoiceUrl"
+                target="_blank"
+                rel="noopener noreferrer">
+                View
+                <mat-icon class="size-4" svgIcon="external-link" />
+              </a>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </mat-card>
+</page-shell>

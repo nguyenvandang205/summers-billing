@@ -1,0 +1,102 @@
+<page-shell title="Add-ons" description="Enable or remove HMP modules for your property.">
+  <div class="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
+    <mat-card appearance="filled" class="rounded-xl px-5 py-4">
+      <div class="text-md text-neutral-500">Active modules</div>
+      <div class="mt-1 text-2xl font-semibold">{{ activeCount() }}</div>
+    </mat-card>
+    <mat-card appearance="filled" class="rounded-xl px-5 py-4">
+      <div class="text-md text-neutral-500">Monthly add-on cost</div>
+      <div class="mt-1 text-2xl font-semibold">
+        {{ monthlyAddonCost() | currency: 'USD' }}
+      </div>
+    </mat-card>
+    <mat-card appearance="filled" class="rounded-xl px-5 py-4">
+      <div class="text-md text-neutral-500">Available modules</div>
+      <div class="mt-1 text-2xl font-semibold">{{ addons().length }}</div>
+    </mat-card>
+  </div>
+
+  @for (category of categories; track category.id) {
+  @if (addonsByCategory()[category.id]?.length) {
+  <section class="mb-8 last:mb-0">
+    <div class="mb-4">
+      <div class="text-lg font-semibold tracking-tight">
+        {{ category.label }}
+      </div>
+      <p class="mt-0.5 text-md text-neutral-500">
+        {{ category.description }}
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 xl:grid-cols-2">
+      @for (addon of addonsByCategory()[category.id]; track addon.id) {
+      <mat-card appearance="filled"
+        class="flex flex-col overflow-hidden rounded-xl p-0 shadow-sm transition-shadow hover:shadow-md" [class]="
+          addon.active
+            ? 'bg-logo-wash ring-[#00AFEF]/35 dark:ring-[#00AFEF]/25'
+            : 'bg-neutral-50 ring-neutral-200/90 dark:bg-zinc-800 dark:ring-zinc-600'
+        ">
+        <div class="flex flex-1 flex-col p-5 sm:p-6">
+          <div class="flex items-start justify-between gap-3">
+            <div
+              class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-white text-neutral-600 shadow-sm ring-1 ring-neutral-200/80 dark:bg-zinc-700 dark:text-neutral-300 dark:ring-zinc-600">
+              <mat-icon class="size-5" [svgIcon]="addon.icon" />
+            </div>
+
+            @if (addon.active) {
+            <span class="rounded-full bg-logo-warm px-2.5 py-1 text-sm font-semibold text-white shadow-sm">
+              Active
+            </span>
+            }
+          </div>
+
+          <div class="mt-4">
+            <div class="text-lg font-semibold tracking-tight">
+              {{ addon.name }}
+            </div>
+            <div class="mt-1 text-md leading-relaxed text-neutral-500">
+              {{ addon.description }}
+            </div>
+          </div>
+
+          <div class="mt-4 flex flex-wrap gap-1.5">
+            @for (feature of addon.features; track feature) {
+            <span
+              class="rounded-md bg-white/80 px-2 py-0.5 text-sm text-neutral-600 ring-1 ring-neutral-200/80 dark:bg-zinc-700/80 dark:text-neutral-300 dark:ring-zinc-600">
+              {{ feature }}
+            </span>
+            }
+          </div>
+
+          <div class="mt-4 text-md font-medium text-neutral-600 dark:text-neutral-400">
+            {{ addon.price | currency: 'USD' }}
+            <span class="font-normal text-neutral-500">/ month</span>
+          </div>
+
+          <div [class]="
+              addon.active
+                ? 'mt-5 border-t border-[#00AFEF]/25 pt-4 dark:border-[#00AFEF]/20'
+                : 'mt-5 border-t border-neutral-200 pt-4 dark:border-zinc-600'
+            ">
+            @if (addon.active) {
+            <button type="button"
+              class="inline-flex w-full cursor-pointer items-center justify-center rounded-lg bg-gradient-to-r from-[#F47526] to-[#E91F74] px-4 py-2.5 text-md font-semibold text-white shadow-sm transition hover:brightness-105 active:brightness-95"
+              (click)="toggleAddon(addon.id)">
+              Remove module
+            </button>
+            } @else {
+            <button type="button"
+              class="inline-flex w-full cursor-pointer items-center justify-center rounded-lg bg-gradient-to-r from-[#1528B5] via-[#1073BA] to-[#00AFEF] px-4 py-2.5 text-md font-semibold text-white shadow-sm transition hover:brightness-105 active:brightness-95"
+              (click)="toggleAddon(addon.id)">
+              Add module
+            </button>
+            }
+          </div>
+        </div>
+      </mat-card>
+      }
+    </div>
+  </section>
+  }
+  }
+</page-shell>

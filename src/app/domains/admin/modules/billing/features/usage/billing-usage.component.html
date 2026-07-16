@@ -1,0 +1,192 @@
+<div class="@container mx-auto flex w-full max-w-7xl flex-auto flex-col gap-6 p-6 sm:gap-6 lg:p-10 lg:pt-8">
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+    <div>
+      <div class="text-xl font-semibold tracking-tight sm:text-2xl">Usage</div>
+      <p class="mt-1 text-md text-neutral-500">
+        Track plan consumption, on-demand charges, and daily activity.
+      </p>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2">
+      <div
+        class="rounded-lg bg-neutral-100 px-3 py-2 text-md font-medium text-neutral-700 dark:bg-neutral-900 dark:text-neutral-300">
+        {{ data().periodLabel }}
+      </div>
+      <div
+        class="flex items-center gap-0.5 rounded-lg bg-neutral-100 p-0.5 dark:bg-neutral-900">
+        @for (period of periods; track period.id) {
+        <button type="button"
+          class="rounded-md px-2.5 py-1.5 text-sm font-medium text-neutral-500 transition-colors hover:text-neutral-800 dark:hover:text-neutral-100"
+          [class.bg-white]="activePeriod() === period.id"
+          [class.text-neutral-900]="activePeriod() === period.id"
+          [class.shadow-sm]="activePeriod() === period.id"
+          [class.dark:bg-neutral-800]="activePeriod() === period.id"
+          [class.dark:text-neutral-50]="activePeriod() === period.id"
+          (click)="setPeriod(period.id)">
+          {{ period.label }}
+        </button>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <mat-card appearance="filled" class="rounded-2xl px-5 py-4">
+      <div class="flex items-center gap-3">
+        <div
+          class="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#1528B5]/15 to-[#00AFEF]/20 text-[#1073BA] dark:text-[#7DD3FC]">
+          <mat-icon class="size-4" svgIcon="wallet" />
+        </div>
+        <div>
+          <div class="text-md text-neutral-500">Total spend</div>
+          <div class="text-2xl font-semibold tabular-nums">
+            {{ data().summary.totalSpend | currency: 'USD' }}
+          </div>
+        </div>
+      </div>
+    </mat-card>
+
+    <mat-card appearance="filled" class="rounded-2xl px-5 py-4">
+      <div class="flex items-center gap-3">
+        <div
+          class="flex size-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">
+          <mat-icon class="size-4" svgIcon="badge-check" />
+        </div>
+        <div>
+          <div class="text-md text-neutral-500">Included</div>
+          <div class="text-2xl font-semibold tabular-nums">
+            {{ data().summary.included | currency: 'USD' }}
+          </div>
+        </div>
+      </div>
+    </mat-card>
+
+    <mat-card appearance="filled" class="rounded-2xl px-5 py-4">
+      <div class="flex items-center gap-3">
+        <div
+          class="flex size-10 items-center justify-center rounded-xl bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">
+          <mat-icon class="size-4" svgIcon="zap" />
+        </div>
+        <div>
+          <div class="text-md text-neutral-500">On-demand</div>
+          <div class="text-2xl font-semibold tabular-nums">
+            {{ data().summary.onDemand | currency: 'USD' }}
+          </div>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+
+  <mat-card appearance="filled" class="overflow-hidden rounded-2xl">
+    <div class="flex flex-col gap-4 border-b border-neutral-200 px-5 py-5 dark:border-neutral-800 sm:flex-row sm:items-start sm:justify-between">
+      <div>
+        <div class="text-lg font-semibold tracking-tight">Your usage</div>
+        <p class="mt-0.5 text-md text-neutral-500">
+          Cumulative spend across this billing period.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <button matButton="outlined" [matMenuTriggerFor]="groupMenu">
+          Group by: {{ groupBy() === 'module' ? 'Module' : 'Type' }}
+          <mat-icon svgIcon="chevron-down" iconPositionEnd />
+        </button>
+        <mat-menu #groupMenu="matMenu">
+          <button mat-menu-item (click)="setGroupBy('module')">Module</button>
+          <button mat-menu-item (click)="setGroupBy('type')">Type</button>
+        </mat-menu>
+
+        <button matButton="outlined" [matMenuTriggerFor]="metricMenu">
+          Metric: {{ metric() === 'spend' ? 'Spend' : 'Events' }}
+          <mat-icon svgIcon="chevron-down" iconPositionEnd />
+        </button>
+        <mat-menu #metricMenu="matMenu">
+          <button mat-menu-item (click)="setMetric('spend')">Spend</button>
+          <button mat-menu-item (click)="setMetric('events')">Events</button>
+        </mat-menu>
+      </div>
+    </div>
+
+    <div class="px-2 pb-2 pt-4 sm:px-4">
+      <apx-chart class="block w-full" [chart]="usageChart.chart" [colors]="usageChart.colors"
+        [dataLabels]="usageChart.dataLabels" [fill]="usageChart.fill" [grid]="usageChart.grid"
+        [legend]="usageChart.legend" [markers]="usageChart.markers" [series]="usageChartSeries()"
+        [stroke]="usageChart.stroke" [tooltip]="usageChart.tooltip()" [xaxis]="usageChartXaxis()"
+        [yaxis]="usageChart.yaxis" />
+    </div>
+  </mat-card>
+
+  <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+    @for (metric of data().planLimits; track metric.label) {
+    <mat-card appearance="filled" class="rounded-2xl p-5">
+      <div class="flex items-center justify-between gap-3">
+        <div class="font-semibold">{{ metric.label }}</div>
+        <div class="text-md text-neutral-500 tabular-nums">
+          {{ metric.used | number }} / {{ metric.limit | number }}
+        </div>
+      </div>
+      <div class="mt-3 h-2 overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
+        <div
+          class="h-full rounded-full bg-gradient-to-r from-[#1528B5] via-[#00AFEF] to-[#22984F]"
+          [style.width.%]="usagePercent(metric.used, metric.limit)"></div>
+      </div>
+      <div class="mt-2 text-sm text-neutral-500">
+        {{ usagePercent(metric.used, metric.limit) }}% of plan limit used
+      </div>
+    </mat-card>
+    }
+  </div>
+
+  <mat-card appearance="filled">
+    <mat-card-header>
+      <div class="flex flex-auto items-center gap-x-2">
+        <mat-icon class="size-4" svgIcon="activity" />
+        <div class="font-medium tracking-tight">Usage events</div>
+        <div class="ml-auto">
+          <button matButton="outlined" (click)="exportCsv()">
+            <mat-icon svgIcon="download" />
+            Export CSV
+          </button>
+        </div>
+      </div>
+    </mat-card-header>
+
+    <div
+      class="mt-4 max-h-[500px] overflow-auto rounded-lg bg-white shadow-sm ring-1 ring-neutral-200/60 lg:max-h-[calc(100dvh-16rem)] dark:bg-neutral-950 dark:ring-neutral-800">
+      <table class="w-full min-w-[720px] text-left text-md">
+        <thead class="sticky top-0 z-10 bg-white dark:bg-neutral-950">
+          <tr class="border-b border-neutral-200 text-neutral-500 dark:border-neutral-800">
+            <th class="px-5 py-3 font-medium sm:px-6">Date (UTC)</th>
+            <th class="px-5 py-3 font-medium sm:px-6">Type</th>
+            <th class="px-5 py-3 font-medium sm:px-6">Module</th>
+            <th class="px-5 py-3 font-medium sm:px-6">Quantity</th>
+            <th class="px-5 py-3 font-medium sm:px-6">Cost</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (event of data().events; track event.id) {
+          <tr class="border-b border-neutral-100 last:border-0 dark:border-neutral-800/80">
+            <td class="px-5 py-3 tabular-nums text-neutral-600 dark:text-neutral-400 sm:px-6">
+              {{ event.date | date: 'MMM d, hh:mm a' }}
+            </td>
+            <td class="px-5 py-3 sm:px-6">
+              <span class="rounded-full px-2 py-0.5 text-sm font-medium" [class]="typeClass(event.type)">
+                {{ event.type }}
+              </span>
+            </td>
+            <td class="px-5 py-3 font-medium sm:px-6">{{ event.module }}</td>
+            <td class="px-5 py-3 tabular-nums sm:px-6">{{ event.quantityLabel }}</td>
+            <td class="px-5 py-3 sm:px-6">
+              @if (event.cost !== null) {
+              <span class="font-medium tabular-nums">{{ event.cost | currency: 'USD' }}</span>
+              } @else {
+              <span class="text-neutral-500">{{ event.costLabel }}</span>
+              }
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </mat-card>
+</div>

@@ -1,0 +1,116 @@
+<page-shell title="Notifications" description="Choose which billing and account alerts you receive.">
+  <form class="grid grid-cols-1 gap-6 md:grid-cols-4 md:gap-8" (submit)="save($event)">
+    <div class="col-span-full">
+      <div class="text-lg font-medium">Email notifications</div>
+      <p class="mt-0.5 text-md text-neutral-500">
+        Alerts sent to your account email.
+      </p>
+    </div>
+
+    <mat-slide-toggle class="col-span-full" [formField]="form.productNews">
+      <div class="ml-2 flex flex-col">
+        <div class="font-medium">Product news and updates</div>
+        <div class="text-md text-neutral-500">
+          Get notified about new features and product improvements.
+        </div>
+      </div>
+    </mat-slide-toggle>
+
+    <mat-slide-toggle class="col-span-full" [formField]="form.securityEmail">
+      <div class="ml-2 flex flex-col">
+        <div class="font-medium">Security alerts</div>
+        <div class="text-md text-neutral-500">
+          Receive important messages about account logins and security issues.
+        </div>
+      </div>
+    </mat-slide-toggle>
+
+    <mat-slide-toggle class="col-span-full" [formField]="form.weeklySummary">
+      <div class="ml-2 flex flex-col">
+        <div class="font-medium">Weekly summary</div>
+        <div class="text-md text-neutral-500">
+          A short recap of spend, usage, and invoices once a week.
+        </div>
+      </div>
+    </mat-slide-toggle>
+
+    <mat-divider class="col-span-full my-2" />
+
+    <div class="col-span-full">
+      <div class="text-lg font-medium">Mobile notifications</div>
+      <p class="mt-0.5 text-md text-neutral-500">
+        Push alerts on your phone when available.
+      </p>
+    </div>
+
+    <mat-slide-toggle class="col-span-full" [formField]="form.systemMobile">
+      <div class="ml-2 flex flex-col">
+        <div class="font-medium">System alerts</div>
+        <div class="text-md text-neutral-500">
+          Important notifications about system status and updates.
+        </div>
+      </div>
+    </mat-slide-toggle>
+
+    <mat-slide-toggle class="col-span-full" [formField]="form.securityMobile">
+      <div class="ml-2 flex flex-col">
+        <div class="font-medium">Security alerts</div>
+        <div class="text-md text-neutral-500">
+          Receive important messages about account logins and security issues.
+        </div>
+      </div>
+    </mat-slide-toggle>
+
+    <mat-slide-toggle class="col-span-full" [formField]="form.billingMobile">
+      <div class="ml-2 flex flex-col">
+        <div class="font-medium">Billing updates</div>
+        <div class="text-md text-neutral-500">
+          Notifications about billing, invoices, and payment methods.
+        </div>
+      </div>
+    </mat-slide-toggle>
+
+    <mat-divider class="col-span-full my-2" />
+
+    <div class="col-span-full">
+      <div class="text-lg font-medium">Desktop notifications</div>
+      <p class="mt-0.5 text-md text-neutral-500">
+        Browser alerts while you are signed in.
+      </p>
+    </div>
+
+    <mat-slide-toggle class="col-span-full" [formField]="form.invitations">
+      <div class="ml-2 flex flex-col">
+        <div class="font-medium">Project invitations</div>
+        <div class="text-md text-neutral-500">
+          Get notified when you're invited to collaborate on a workspace.
+        </div>
+      </div>
+    </mat-slide-toggle>
+
+    <mat-slide-toggle class="col-span-full" [formField]="form.mentions">
+      <div class="ml-2 flex flex-col">
+        <div class="font-medium">Mentions</div>
+        <div class="text-md text-neutral-500">
+          Receive notifications when someone mentions you in comments.
+        </div>
+      </div>
+    </mat-slide-toggle>
+
+    <mat-slide-toggle class="col-span-full" [formField]="form.reminders">
+      <div class="ml-2 flex flex-col">
+        <div class="font-medium">Billing reminders</div>
+        <div class="text-md text-neutral-500">
+          Reminders for renewals, failed payments, and usage limits.
+        </div>
+      </div>
+    </mat-slide-toggle>
+
+    <mat-divider class="col-span-full my-2" />
+
+    <div class="col-span-full flex items-center justify-end gap-x-4">
+      <button type="button" matButton="outlined" (click)="reset()">Cancel</button>
+      <button matButton="filled">Save</button>
+    </div>
+  </form>
+</page-shell>

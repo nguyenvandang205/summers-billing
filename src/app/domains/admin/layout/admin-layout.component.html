@@ -1,0 +1,21 @@
+<mat-sidenav-container>
+  <mat-sidenav class="w-70 dark:bg-zinc-950" [mode]="isMobile() ? 'over' : 'side'" [opened]="!isMobile()"
+    [disableClose]="!isMobile()" fixedInViewport #sidenav="matSidenav">
+    <admin-sidebar />
+  </mat-sidenav>
+
+  <mat-sidenav-content class="bg-zinc-50 dark:bg-zinc-950">
+    <div class="flex min-h-full flex-col p-3 pl-2 sm:p-4 sm:pl-2">
+      <div class="mb-3 flex items-center gap-2 px-1 md:mb-0 lg:hidden">
+        <button matIconButton (click)="sidenav.toggle()">
+          <mat-icon svgIcon="panel-left" />
+        </button>
+      </div>
+
+      <div
+        class="flex min-h-0 flex-auto flex-col overflow-hidden rounded-2xl border-zinc-200/80 bg-white shadow-sm dark:bg-zinc-900 dark:shadow-sm dark:shadow-black/20">
+        <router-outlet />
+      </div>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

@@ -1,0 +1,136 @@
+<page-shell title="Payment" description="Manage payment methods and account credits.">
+  <div class="flex flex-col gap-5">
+    @for (method of data.paymentMethods; track method.id) {
+    <mat-card appearance="filled">
+      <div class="flex items-center gap-x-2 px-1">
+        <mat-icon class="size-4 text-neutral-500" svgIcon="credit-card" />
+        <div class="font-medium tracking-tight">Saved card</div>
+        @if (method.isDefault) {
+        <span
+          class="rounded-full bg-primary-100 px-2 py-0.5 text-sm font-medium text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">
+          Default
+        </span>
+        }
+      </div>
+
+      <div
+        class="mt-4 flex flex-col gap-4 rounded-lg bg-white px-5 py-5 shadow-sm ring-1 ring-neutral-200/60 sm:flex-row sm:items-center sm:justify-between dark:bg-neutral-950 dark:ring-neutral-800">
+        <div>
+          <div class="text-xl font-semibold tracking-tight">
+            {{ method.brand }} •••• {{ method.last4 }}
+          </div>
+          <div class="mt-1 text-md text-neutral-500">
+            Expires {{ method.expMonth }}/{{ method.expYear }}
+          </div>
+        </div>
+        <a matButton="outlined" [href]="portal.stripePortalUrl" target="_blank" rel="noopener noreferrer">
+          Manage in Stripe
+        </a>
+      </div>
+    </mat-card>
+    }
+
+    @if (showAddCard()) {
+    <mat-card appearance="filled">
+      <div class="flex items-center gap-x-2 px-1">
+        <mat-icon class="size-4 text-neutral-500" svgIcon="credit-card" />
+        <div class="font-medium tracking-tight">Add payment method</div>
+      </div>
+
+      <form
+        class="mt-4 rounded-lg bg-white px-5 py-5 shadow-sm ring-1 ring-neutral-200/60 dark:bg-neutral-950 dark:ring-neutral-800"
+        (submit)="addCard($event)">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <mat-form-field class="col-span-full">
+            <mat-label>Card number</mat-label>
+            <mat-icon matPrefix svgIcon="credit-card" />
+            <input matInput inputmode="numeric" autocomplete="cc-number" placeholder="4242 4242 4242 4242"
+              [formField]="addCardForm.cardNumber" (input)="onCardNumberInput($event)" />
+            @if (detectedCard(); as card) {
+            <span matSuffix
+              class="mr-1 rounded-md bg-neutral-100 px-2 py-0.5 text-sm font-semibold tracking-wide text-neutral-700 uppercase dark:bg-neutral-800 dark:text-neutral-200">
+              {{ card.niceType }}
+            </span>
+            }
+            <mat-error>
+              @for (error of addCardForm.cardNumber().errors(); track error) {
+              {{ error.message }}
+              }
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Expiry date</mat-label>
+            <mat-icon matPrefix svgIcon="calendar" />
+            <input matInput inputmode="numeric" autocomplete="cc-exp" placeholder="MM / YY"
+              [formField]="addCardForm.expiry" (input)="onExpiryInput($event)" />
+            <mat-error>
+              @for (error of addCardForm.expiry().errors(); track error) {
+              {{ error.message }}
+              }
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Security code</mat-label>
+            <mat-icon matPrefix svgIcon="lock-keyhole" />
+            <input matInput type="password" inputmode="numeric" autocomplete="cc-csc" [placeholder]="cvcLabel()"
+              [formField]="addCardForm.cvc" (input)="onCvcInput($event)" />
+            <mat-hint>{{ cvcLabel() }}</mat-hint>
+            <mat-error>
+              @for (error of addCardForm.cvc().errors(); track error) {
+              {{ error.message }}
+              }
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field class="col-span-full">
+            <mat-label>Cardholder name</mat-label>
+            <mat-icon matPrefix svgIcon="user" />
+            <input matInput autocomplete="cc-name" placeholder="John Doe" [formField]="addCardForm.cardHolder" />
+            <mat-error>
+              @for (error of addCardForm.cardHolder().errors(); track error) {
+              {{ error.message }}
+              }
+            </mat-error>
+          </mat-form-field>
+
+          <mat-checkbox class="col-span-full" [formField]="addCardForm.saveCard">
+            Save this card for future payments
+          </mat-checkbox>
+        </div>
+
+        <div class="mt-6 flex items-center justify-end gap-x-3">
+          <button type="button" matButton="outlined" (click)="cancelAddCard()">
+            Cancel
+          </button>
+          <button type="submit" matButton="filled">Add card</button>
+        </div>
+      </form>
+    </mat-card>
+    } @else {
+    <div class="flex justify-end">
+      <button type="button" matButton="filled" (click)="openAddCard()">
+        <mat-icon svgIcon="plus" />
+        Add card
+      </button>
+    </div>
+    }
+
+    <mat-card appearance="filled">
+      <div class="flex items-center gap-x-2 px-1">
+        <mat-icon class="size-4 text-neutral-500" svgIcon="wallet" />
+        <div class="font-medium tracking-tight">Credits</div>
+      </div>
+      <div
+        class="mt-4 rounded-lg bg-white px-5 py-5 shadow-sm ring-1 ring-neutral-200/60 dark:bg-neutral-950 dark:ring-neutral-800">
+        <div class="text-3xl font-semibold tracking-tight tabular-nums">
+          {{ data.credits | currency: 'USD' }}
+        </div>
+        <div class="mt-1 text-md text-neutral-500">
+          Available account balance
+        </div>
+      </div>
+    </mat-card>
+  </div>
+</page-shell>
