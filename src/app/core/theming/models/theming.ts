@@ -8,7 +8,7 @@ export type Colors = {
 export type ThemeConfig = Colors & Record<'scheme', Scheme>;
 
 export const DEFAULT_THEME_CONFIG: ThemeConfig = {
-  scheme: 'system',
+  scheme: 'light',
   primary: '#1565C0',
   error: '#dc2626',
 };

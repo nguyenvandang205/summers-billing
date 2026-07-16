@@ -22,7 +22,7 @@ import { provideTransloco } from '@jsverse/transloco';
 import { routes } from './app.routes';
 
 const themeConfig = {
-  scheme: 'system' as const,
+  scheme: 'light' as const,
   primary: '#1565C0',
   error: '#dc2626',
 };
