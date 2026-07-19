@@ -37,8 +37,8 @@
         </div>
       </div>
     </mat-card-header>
-    <div class="grid min-w-0 grid-cols-4 gap-2">
-      <mat-card-content class="col-span-full flex min-w-0 flex-auto flex-col overflow-hidden p-0 @2xl:col-span-2 @4xl:col-span-3">
+    <div class="grid min-w-0 grid-cols-1 gap-2 xl:grid-cols-3">
+      <mat-card-content class="col-span-full flex min-w-0 flex-auto flex-col overflow-hidden p-0 xl:col-span-2">
         <div class="flex flex-col items-start gap-4 pt-4 pr-4 pl-6 sm:pt-6">
           <div class="flex min-w-0 flex-col">
             <div class="text-3xl font-semibold">Charges vs. Payments</div>
@@ -61,8 +61,8 @@
             }
           </div>
         </div>
-        <div class="min-w-0 overflow-x-auto overflow-y-hidden overscroll-x-contain [-webkit-overflow-scrolling:touch]">
-          <div class="w-[40rem] max-w-none sm:w-full">
+        <div class="min-w-0 overflow-hidden max-sm:overflow-x-auto max-sm:overscroll-x-contain max-sm:[-webkit-overflow-scrolling:touch]">
+          <div class="w-full max-sm:w-160">
             <apx-chart #billingChartCmp class="block h-72 w-full" [chart]="billingChart.chart"
               [colors]="billingChart.colors" [dataLabels]="billingChart.dataLabels" [fill]="billingChartFill()"
               [grid]="billingChart.grid" [legend]="billingChart.legend" [markers]="billingChart.markers"
@@ -72,7 +72,7 @@
         </div>
       </mat-card-content>
 
-      <mat-card-content class="col-span-full flex flex-col @2xl:col-span-2 @4xl:col-span-1 text-md">
+      <mat-card-content class="col-span-full flex flex-col text-md xl:col-span-1">
         <div class="mt-1">
           Distribution of invoices by their status.
         </div>

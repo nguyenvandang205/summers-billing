@@ -11,7 +11,10 @@ const browserDistFolder = join(import.meta.dirname, '../browser');
 
 const app = express();
 const angularApp = new AngularNodeAppEngine({
-  allowedHosts: ['*'],
+  allowedHosts: [
+    'summers-billing.vercel.app',
+    'localhost',
+  ],
 });
 
 /**
