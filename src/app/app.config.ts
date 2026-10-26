@@ -12,9 +12,11 @@ import {
   withIncrementalHydration,
 } from '@angular/platform-browser';
 import {
+  PreloadAllModules,
   provideRouter,
   withComponentInputBinding,
   withInMemoryScrolling,
+  withPreloading,
 } from '@angular/router';
 import { provideIcons } from '@/app/core/icons/provider';
 import { provideTheming, provideThemeConfig } from '@/app/core/theming';
@@ -35,7 +37,8 @@ export const appConfig: ApplicationConfig = {
     provideRouter(
       routes,
       withComponentInputBinding(),
-      withInMemoryScrolling({ scrollPositionRestoration: 'enabled' })
+      withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
+      withPreloading(PreloadAllModules)
     ),
 
     // Material
