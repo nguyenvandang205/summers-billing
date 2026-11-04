@@ -2,12 +2,11 @@
 
 ## Đã làm
 
-Đã thêm bộ đếm `visible of total` cạnh ô search trên `/billing/invoices`, đúng plan.
+Đã thêm chip All, Paid, Pending trên `/billing/invoices`, lọc giao với search hiện có, đúng plan.
 
-- `resultCount` là `computed` trả về `` `${this.visibleInvoices().length} of ${this.data.invoices.length}` ``. Không sửa `visibleInvoices`, `query`, `onQueryInput`, hay `statusClass`.
-- `total` lấy từ `data.invoices.length`, không hardcode `2`. Ô trống hoặc chỉ khoảng trắng vẫn đếm đủ danh sách (`2 of 2` với dữ liệu hiện tại). Khớp một hóa đơn là `1 of 2`. Không khớp là `0 of 2`. Dòng `No invoices match` không được tính.
-- Template bọc input trong hàng `mt-4 flex items-center gap-3`. Input giữ `aria-label="Search invoices"`, `[value]`, `(input)`; bỏ `mt-4` khỏi input; thêm `min-w-0 flex-1`. Ngay sau input, một `span` chỉ render `{{ resultCount() }}`, có `shrink-0` và `whitespace-nowrap`.
-- Không đổi `@for`, nhánh `visibleInvoices().length === 0`, chữ `No invoices match`, cột, sort, menu, hay link View. Không sửa `BillingPortalService`, `getBilling()`, hay `billing-portal.ts`. Không tạo file mới và không sửa test.
+- Kiểu `InvoiceStatusFilter = 'all' | 'Paid' | 'Pending'`. Signal `statusFilter` khởi tạo `'all'`. Mảng `statusFilters` có nhãn `All`, `Paid`, `Pending`. `setStatusFilter` gán signal khi bấm chip; bấm lại chip đang chọn giữ nguyên giá trị.
+- `visibleInvoices` lọc AND: chip `All` không lọc status; `Paid` và `Pending` so `invoice.status ===` đúng chữ. Search giữ trim, không phân biệt hoa thường, khớp `number`, `date`, hoặc `status` bằng `includes`. `All` và query rỗng sau trim trả về đúng `data.invoices`. Không sửa `resultCount`, `onQueryInput`, hay `statusClass`. Mẫu số vẫn `data.invoices.length`.
+- Template: hàng chip `flex flex-wrap items-center gap-1.5`, `role="group"`, `aria-label="Invoice status"`, đứng sau `mat-card-header` và trước hàng search. Mỗi chip là `<button type="button">` kiểu nút lọc notifications (`rounded-full`, `bg-primary-600 text-white` khi chọn, nền trung tính khi không). `aria-pressed` là `true` chỉ trên chip đang chọn. Hàng search, input, span count, bảng, và `No invoices match` giữ nguyên. Không thêm chip Failed, không sửa dữ liệu, không tạo file mới, không sửa test.
 
 ## File đã sửa
 

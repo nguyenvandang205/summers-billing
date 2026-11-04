@@ -4,8 +4,8 @@ Viết yêu cầu bên dưới (có thể sơ sài). Chạy skill `dev-team` đ�
 
 ## Yêu cầu
 
-## Invoice result count
+## Invoice status chips
 
 status: todo
 
-Trang Invoices: cạnh ô search hiện số dòng đang thấy, dạng `1 of 2`. Đổi theo ô search. Ô trống thì đếm đủ danh sách. Không khớp thì `0 of 2`.
+Trang Invoices: thêm chip All, Paid, Pending. Chip và ô search cùng lọc. All là mặc định. Không dòng nào khớp thì vẫn hiện `No invoices match`.
