@@ -16,6 +16,13 @@
       </div>
     </mat-card-header>
 
+    <input
+      type="search"
+      class="mt-4 w-full rounded-lg bg-white px-4 py-2 text-md text-neutral-900 shadow-sm ring-1 ring-neutral-200/60 outline-none dark:bg-neutral-950 dark:text-neutral-100 dark:ring-neutral-800"
+      aria-label="Search invoices"
+      [value]="query()"
+      (input)="onQueryInput($event)" />
+
     <div
       class="mt-4 max-h-[500px] overflow-auto rounded-lg bg-white shadow-sm ring-1 ring-neutral-200/60 lg:max-h-[calc(100dvh-16rem)] dark:bg-neutral-950 dark:ring-neutral-800">
       <table class="w-full min-w-[640px] text-left text-md">
@@ -34,7 +41,14 @@
           </tr>
         </thead>
         <tbody>
-          @for (invoice of data.invoices; track invoice.id) {
+          @if (visibleInvoices().length === 0) {
+          <tr>
+            <td class="px-5 py-3 text-neutral-500 sm:px-6" colspan="5">
+              No invoices match
+            </td>
+          </tr>
+          } @else {
+          @for (invoice of visibleInvoices(); track invoice.id) {
           <tr
             class="border-b border-neutral-100 last:border-0 dark:border-neutral-800/80">
             <td class="px-5 py-3 font-medium tabular-nums sm:px-6">
@@ -64,6 +78,7 @@
               </a>
             </td>
           </tr>
+          }
           }
         </tbody>
       </table>

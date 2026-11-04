@@ -1,5 +1,5 @@
 import { CurrencyPipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { MatIconButton } from '@angular/material/button';
 import { MatCard, MatCardHeader } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
@@ -27,6 +27,22 @@ import { PageShell } from '@/app/domains/admin/layout/ui/page-shell.component';
 export default class BillingInvoices {
   private portal = inject(BillingPortalService);
   protected data = this.portal.getBilling();
+  protected query = signal('');
+  protected visibleInvoices = computed(() => {
+    const term = this.query().trim().toLowerCase();
+    if (!term) {
+      return this.data.invoices;
+    }
+    return this.data.invoices.filter((invoice) =>
+      [invoice.number, invoice.date, invoice.status].some((value) =>
+        value.toLowerCase().includes(term)
+      )
+    );
+  });
+
+  protected onQueryInput(event: Event) {
+    this.query.set((event.target as HTMLInputElement).value);
+  }
 
   statusClass(status: string) {
     if (status === 'Paid') {
