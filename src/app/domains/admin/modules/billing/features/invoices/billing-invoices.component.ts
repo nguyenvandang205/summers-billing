@@ -8,6 +8,8 @@ import { RouterLink } from '@angular/router';
 import { BillingPortalService } from '@/app/domains/admin/data/billing-portal';
 import { PageShell } from '@/app/domains/admin/layout/ui/page-shell.component';
 
+type InvoiceStatusFilter = 'all' | 'Paid' | 'Pending';
+
 @Component({
   selector: 'billing-invoices',
   imports: [
@@ -28,16 +30,29 @@ export default class BillingInvoices {
   private portal = inject(BillingPortalService);
   protected data = this.portal.getBilling();
   protected query = signal('');
+  protected statusFilter = signal<InvoiceStatusFilter>('all');
+  protected statusFilters: { value: InvoiceStatusFilter; label: string }[] = [
+    { value: 'all', label: 'All' },
+    { value: 'Paid', label: 'Paid' },
+    { value: 'Pending', label: 'Pending' },
+  ];
   protected visibleInvoices = computed(() => {
     const term = this.query().trim().toLowerCase();
-    if (!term) {
+    const status = this.statusFilter();
+    if (status === 'all' && !term) {
       return this.data.invoices;
     }
-    return this.data.invoices.filter((invoice) =>
-      [invoice.number, invoice.date, invoice.status].some((value) =>
+    return this.data.invoices.filter((invoice) => {
+      if (status !== 'all' && invoice.status !== status) {
+        return false;
+      }
+      if (!term) {
+        return true;
+      }
+      return [invoice.number, invoice.date, invoice.status].some((value) =>
         value.toLowerCase().includes(term)
-      )
-    );
+      );
+    });
   });
   protected resultCount = computed(
     () => `${this.visibleInvoices().length} of ${this.data.invoices.length}`
@@ -45,6 +60,10 @@ export default class BillingInvoices {
 
   protected onQueryInput(event: Event) {
     this.query.set((event.target as HTMLInputElement).value);
+  }
+
+  protected setStatusFilter(filter: InvoiceStatusFilter) {
+    this.statusFilter.set(filter);
   }
 
   statusClass(status: string) {

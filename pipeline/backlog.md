@@ -10,7 +10,7 @@ Trang Invoices: cạnh ô search hiện số dòng đang thấy, dạng `1 of 2`
 
 ## Invoice status chips
 
-status: todo
+status: done
 
 Trang Invoices: thêm chip All, Paid, Pending. Chip và ô search cùng lọc. All là mặc định. Không dòng nào khớp thì vẫn hiện `No invoices match`.
 
