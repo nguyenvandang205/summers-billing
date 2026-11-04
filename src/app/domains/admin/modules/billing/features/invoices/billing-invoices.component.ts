@@ -39,6 +39,9 @@ export default class BillingInvoices {
       )
     );
   });
+  protected resultCount = computed(
+    () => `${this.visibleInvoices().length} of ${this.data.invoices.length}`
+  );
 
   protected onQueryInput(event: Event) {
     this.query.set((event.target as HTMLInputElement).value);

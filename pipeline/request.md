@@ -4,4 +4,8 @@ Viết yêu cầu bên dưới (có thể sơ sài). Chạy skill `dev-team` đ�
 
 ## Yêu cầu
 
-Trang Invoices (`/billing/invoices`) thêm ô tìm kiếm phía trên bảng. Gõ số hóa đơn, ngày, hoặc status thì bảng chỉ còn dòng khớp (không phân biệt hoa thường). Xóa hết chữ thì hiện lại full danh sách. Không có kết quả thì hiện một dòng "No invoices match".
+## Invoice result count
+
+status: todo
+
+Trang Invoices: cạnh ô search hiện số dòng đang thấy, dạng `1 of 2`. Đổi theo ô search. Ô trống thì đếm đủ danh sách. Không khớp thì `0 of 2`.

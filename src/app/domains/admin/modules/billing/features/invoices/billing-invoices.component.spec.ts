@@ -3,7 +3,7 @@ import { provideRouter } from '@angular/router';
 import { provideIcons } from '@/app/core/icons/provider';
 import BillingInvoices from './billing-invoices.component';
 
-describe('BillingInvoices search', () => {
+describe('BillingInvoices search result count', () => {
   let fixture: ComponentFixture<BillingInvoices>;
 
   beforeEach(async () => {
@@ -59,6 +59,45 @@ describe('BillingInvoices search', () => {
     return host().querySelector('tbody td[colspan="5"]');
   }
 
+  function searchInput(): HTMLInputElement {
+    const input = host().querySelector(
+      'input[aria-label="Search invoices"]'
+    ) as HTMLInputElement | null;
+    expect(input).not.toBeNull();
+    return input as HTMLInputElement;
+  }
+
+  function resultCountEl(): HTMLElement {
+    const input = searchInput();
+    const count = input.nextElementSibling;
+    expect(count).toBeInstanceOf(HTMLElement);
+    expect(count?.parentElement).toBe(input.parentElement);
+    return count as HTMLElement;
+  }
+
+  function expectResultCount(expected: string): void {
+    const input = searchInput();
+    const count = resultCountEl();
+    const row = input.parentElement;
+
+    expect(row).not.toBeNull();
+    expect(row?.className).toContain('mt-4');
+    expect(row?.className).toContain('flex');
+    expect(row?.className).toContain('items-center');
+    expect(row?.className).toContain('gap-3');
+    expect(input.className).toContain('min-w-0');
+    expect(input.className).toContain('flex-1');
+    expect(input.className).not.toContain('mt-4');
+    expect(count.className).toContain('shrink-0');
+    expect(count.className).toContain('whitespace-nowrap');
+    expect(count.textContent).toBe(expected);
+    expect(count.closest('table')).toBeNull();
+    expect(count.closest('thead')).toBeNull();
+    expect(count.closest('mat-card-header')).toBeNull();
+    expect(count.closest('mat-menu')).toBeNull();
+    expect(expected).toMatch(/^\d+ of \d+$/);
+  }
+
   async function search(value: string): Promise<void> {
     const input = host().querySelector(
       'input[aria-label="Search invoices"]'
@@ -85,6 +124,7 @@ describe('BillingInvoices search', () => {
       'Action',
     ]);
     expect(viewLinks()).toHaveLength(2);
+    expectResultCount('2 of 2');
   });
 
   it('shows only INV-1001 when the query is inv-1001', async () => {
@@ -102,6 +142,7 @@ describe('BillingInvoices search', () => {
     ]);
     expect(viewLinks()).toHaveLength(1);
     expect(viewLinks()[0]?.getAttribute('href')).toBe('#');
+    expectResultCount('1 of 2');
   });
 
   it('shows only INV-1002 when the query is PENDING', async () => {
@@ -111,6 +152,7 @@ describe('BillingInvoices search', () => {
     expect(host().textContent).not.toContain('INV-1001');
     expect(host().textContent).toContain('Pending');
     expect(host().textContent).not.toContain('No invoices match');
+    expectResultCount('1 of 2');
   });
 
   it('shows one empty cell and no invoice numbers for 299', async () => {
@@ -129,6 +171,8 @@ describe('BillingInvoices search', () => {
       'Action',
     ]);
     expect(viewLinks()).toHaveLength(0);
+    expect(host().querySelectorAll('tbody tr')).toHaveLength(1);
+    expectResultCount('0 of 2');
   });
 
   it('shows both invoices again for a whitespace-only query', async () => {
@@ -138,6 +182,7 @@ describe('BillingInvoices search', () => {
     expect(invoiceNumbers()).toEqual(['INV-1001', 'INV-1002']);
     expect(host().textContent).not.toContain('No invoices match');
     expect(emptyCell()).toBeNull();
+    expectResultCount('2 of 2');
   });
 
   it('shows both invoices again when the query is cleared', async () => {
@@ -146,6 +191,7 @@ describe('BillingInvoices search', () => {
 
     expect(invoiceNumbers()).toEqual(['INV-1001', 'INV-1002']);
     expect(host().textContent).not.toContain('No invoices match');
+    expectResultCount('2 of 2');
   });
 
   it('filters by a fragment of the displayed invoice date', async () => {
@@ -168,6 +214,7 @@ describe('BillingInvoices search', () => {
     expect(invoiceNumbers()).toEqual([firstNumber]);
     expect(host().textContent).not.toContain(secondNumber);
     expect(host().textContent).not.toContain('No invoices match');
+    expectResultCount('1 of 2');
   });
 
   it('does not match invoice amount 348', async () => {
@@ -175,6 +222,8 @@ describe('BillingInvoices search', () => {
 
     expect(invoiceNumbers()).toEqual([]);
     expect(emptyCell()?.textContent?.trim()).toBe('No invoices match');
+    expect(host().querySelectorAll('tbody tr')).toHaveLength(1);
+    expectResultCount('0 of 2');
   });
 
   it('matches Paid when the query is padded with spaces', async () => {
@@ -182,6 +231,7 @@ describe('BillingInvoices search', () => {
 
     expect(invoiceNumbers()).toEqual(['INV-1001']);
     expect(host().textContent).not.toContain('INV-1002');
+    expectResultCount('1 of 2');
   });
 
   it('matches both invoices for the shared number fragment 100', async () => {
@@ -189,5 +239,6 @@ describe('BillingInvoices search', () => {
 
     expect(invoiceNumbers()).toEqual(['INV-1001', 'INV-1002']);
     expect(host().textContent).not.toContain('No invoices match');
+    expectResultCount('2 of 2');
   });
 });
